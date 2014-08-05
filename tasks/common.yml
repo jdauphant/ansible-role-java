@@ -2,24 +2,22 @@
 # Common tasks applicable to both Oracle and OpenJDK
 
 # this directory will contain the Java downloads
-- name: Install Java download directory (local)
+- name: Install Java download directory
   tags:
     - java
     - download
-  local_action: file
+  file:
     state=directory
-    owner=0
-    group=0
     mode=2777
     dest={{ ansible_data_path }}
 
 
 # Test whether we need to download Java.
-- name: Install Oracle Java redis package sha256sum (local)
+- name: Install Oracle Java redis package sha256sum
   tags:
     - java
     - download
-  local_action: template
+  template:
     src=sha256sum.j2
     dest={{ ansible_data_path }}/java.sha256sum
     mode=0644

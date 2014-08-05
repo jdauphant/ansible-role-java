@@ -20,14 +20,14 @@
     - download
 
 # Test whether we need to download Java.
-- name: Verify Oracle Java redis package sha256sum (local)
+- name: Verify Oracle Java redis package sha256sum
   tags:
     - java
     - download
   ignore_errors: true
   failed_when: false
   register: java_oracle_redis_exists
-  local_action: command
+  command:
     shasum
       --algorithm 256
       --portable
@@ -36,12 +36,12 @@
       {{ ansible_data_path }}/java.sha256sum
 
 # Ensure there is no broken download on the local disk
-- name: Remove possible broken Java redis package (local)
+- name: Remove possible broken Java redis package
   tags:
     - java
     - download
   when: java_oracle_redis_exists.rc != 0
-  local_action: file
+  file:
     state=absent
     dest={{ ansible_data_path }}/{{ java_oracle_redis_filename }}
 
@@ -50,14 +50,14 @@
 # This allows to distribute Java to any number of hosts in the
 # context of a local network instead of downloading Java again
 # for every role/node which depends on this role.
-- name: Download Oracle Java redis package (local)
+- name: Download Oracle Java redis package
   tags:
     - java
     - download
   sudo: no
   register: java_oracle_redis_download
   when: java_oracle_redis_exists.rc != 0
-  local_action: command
+  command:
     curl
       --location
       --insecure
@@ -68,21 +68,21 @@
     chdir={{ ansible_data_path }}
     creates={{ ansible_data_path }}/{{ java_oracle_redis_filename }}
 
-- name: Ensure downloaded archive is world readable (local)
+- name: Ensure downloaded archive is world readable
   tags:
     - java
     - download
-  local_action: file
+  file:
     dest={{ ansible_data_path }}/{{ java_oracle_redis_filename }}
     mode=0644
 
 # Test whether downloaded redistributable package passes sha256sum
-- name: Verify Oracle Java redis package sha256sum (local)
+- name: Verify Oracle Java redis package sha256sum
   tags:
     - java
     - download
   when: java_oracle_redis_download|changed
-  local_action: command
+  command:
     shasum
       --algorithm 256
       --portable
@@ -107,6 +107,7 @@
   unarchive:
     src={{ ansible_data_path }}/{{ java_oracle_redis_filename }}
     dest={{ java_install_dir }}/oracle/
+    copy=no
 
 
 # Archives may be packaged with some useless uid and gid
