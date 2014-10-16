@@ -67,6 +67,7 @@
       {{ java_oracle_redis_mirror }}
     chdir={{ ansible_data_path }}
     creates={{ ansible_data_path }}/{{ java_oracle_redis_filename }}
+  environment: java_environment
 
 - name: Ensure downloaded archive is world readable
   tags:
