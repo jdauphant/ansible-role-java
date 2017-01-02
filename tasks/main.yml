@@ -1,3 +1,4 @@
 ---
 - include: Debian.yml
+  tags: java
   when: ansible_os_family == 'Debian'
